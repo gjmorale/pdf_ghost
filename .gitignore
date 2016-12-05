@@ -1,0 +1,6 @@
+in/*
+!in/.gitkeep
+out/*
+!out/.gitkeep
+source.private
+source.private~
