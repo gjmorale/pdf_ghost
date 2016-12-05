@@ -1,7 +1,5 @@
 
-# README
-
-## PDF Ghost
+# PDF Ghost
 
 Procesa archivos pdf para ser leidos por [pdf_reader](https://github.com/gjmorale/pdf-reader)
 
@@ -9,10 +7,10 @@ Procesa archivos pdf para ser leidos por [pdf_reader](https://github.com/gjmoral
 Clonar repositorio
 
 ### Setup
-Configurar rutas in, out y source en _ghost.rb_
+Configurar rutas _In_, _Out_ y _Source_ en _ghost.rb_
 * _In: Ruta desde la cual obtener cartolas_
 * _Out: Careta donde guardar archivos procesados_
-* _Source: Archivo con text por eliminar de el archivo original_
+* _Source: Archivo con texto por eliminar de el archivo original_
 
 **IMPORTANTE: Carpeta _Out_ será completamente eliminada en cada ejecución.**
 
