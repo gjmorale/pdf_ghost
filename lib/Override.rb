@@ -26,7 +26,9 @@ PDF::Reader::PageTextReceiver.class_eval do
           prev_space = (utf8_chars == SPACE) #EDIT
           @state.process_glyph_displacement(glyph_width, 0, utf8_chars == SPACE)
         end
-        @characters << PDF::Reader::TextRun.new(newx*2, newy*2, total_width, @state.font_size, total_text) #EDIT
+        unless string.match /^\d{6}\s[A-Z0-9]{8}\s\d{6}$/ #Morgan Stanley vertical code remover
+          @characters << PDF::Reader::TextRun.new(newx*2, newy*2, total_width, @state.font_size, total_text) #EDIT
+        end
     end
 
 end
