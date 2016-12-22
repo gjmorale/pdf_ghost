@@ -10,27 +10,34 @@ class Cleaner
 
 	def execute
 		print "Processing"
-		files = Dir["#{@input_path}/*.pdf"]
+		files = Dir["#{@input_path}/*/*.pdf"]
 		total = files.size
 		puts " #{total} files: "
 		files.each.with_index do |file, i|
 			print "[#{i}/#{total}]"
 			name = File.basename(file, '.pdf')
-			file_name = "#{@output_path}/" << name
-			f_input = File.open(file)
+			dir_name = File.dirname(file)
+			dir_name = dir_name[dir_name.rindex('/')+1..-1]
+			file_name = "#{@output_path}/" << dir_name
 			unless File.exist? "#{file_name}"
 				Dir.mkdir(file_name) 
 			end
+			sub_file_name = "#{@output_path}/" << dir_name << "/" << name
+			unless File.exist? "#{sub_file_name}"
+				Dir.mkdir(sub_file_name) 
+				Dir.mkdir("#{sub_file_name}/raw")
+			end
+			f_input = File.open(file)
 			@reader = PDF::Reader.new(f_input)
 			n = @reader.pages.size
 			step = 0
 			@reader.pages.each.with_index do |page, j|
-				raw_output = File.open("#{file_name}/#{name}_#{page.number}.raw", "w")
+				raw_output = File.open("#{sub_file_name}/raw/#{name}_#{page.number}.raw", "w")
 				write(page.raw_content, raw_output, 1)
 				receiver = PDF::Reader::PageTextReceiver.new
 				page.walk(receiver)
 				content = receiver.content
-				f_output = File.open("#{file_name}/#{name}_#{page.number}.page",'w')
+				f_output = File.open("#{sub_file_name}/#{name}_#{page.number}.page",'w')
 				write(content, f_output)
 				if ( prog = ((j+1)*100)/(n)) >= step
 					delta = ((prog-step)/4+1)

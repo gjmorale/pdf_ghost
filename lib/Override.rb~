@@ -1,15 +1,4 @@
 
-PDF::Reader::PageState.class_eval do
-
-  def tilted?
-    trm = text_rendering_matrix
-    return true if trm.b !=0 or trm.c != 0
-    #puts "---------\n#{ctm.a},#{ctm.b}"
-    #puts "#{ctm.c},#{ctm.d}"
-    #puts "#{ctm.e},#{ctm.f}"
-  end
-
-end
 PDF::Reader::PageTextReceiver.class_eval do
 	SPACE = " "
 
@@ -37,8 +26,8 @@ PDF::Reader::PageTextReceiver.class_eval do
           prev_space = (utf8_chars == SPACE) #EDIT
           @state.process_glyph_displacement(glyph_width, 0, utf8_chars == SPACE)
         end
-        unless @state.tilted?#string.match /^\d{6}\s[A-Z0-9]{8}\s\d{6}$/ #Morgan Stanley vertical code remover
-          @characters << PDF::Reader::TextRun.new(newx*2, newy*2, total_width, @state.font_size, total_text) #EDIT
+        unless string.match /^\d{6}\s[A-Z0-9]{8}\s\d{6}$/ #Morgan Stanley vertical code remover
+          @characters << PDF::Reader::TextRun.new(newx*2, newy*1, total_width, @state.font_size, total_text) #EDIT
         end
     end
 
@@ -55,7 +44,7 @@ PDF::Reader::PageLayout.class_eval do
       @mean_font_size   = mean(@runs.map(&:font_size)) || 0
       @mean_glyph_width = mean(@runs.map(&:mean_character_width)) || 0
       @page_width  = (mediabox[2] - mediabox[0])*2 #EDIT
-      @page_height = (mediabox[3] - mediabox[1])*2 #EDIT
+      @page_height = (mediabox[3] - mediabox[1])*1 #EDIT
       @x_offset = @runs.map(&:x).sort.first
       @current_platform_is_rbx_19 = RUBY_DESCRIPTION =~ /\Arubinius 2.0.0/ &&
                                       RUBY_VERSION >= "1.9.0"
@@ -65,7 +54,6 @@ PDF::Reader::PageLayout.class_eval do
       return "" if @runs.empty?
 
       wildchar = '¶'
-      #@mean_glyph_width = @page_width if @mean_glyph_width.nan?
       page = row_count.times.map { |i| wildchar * col_count }
       @runs.each do |run|
         x_pos = ((run.x - @x_offset) / col_multiplier).round
@@ -75,33 +63,6 @@ PDF::Reader::PageLayout.class_eval do
         end
       end
       interesting_rows(page).map(&:rstrip).join("\n")
-    end
-
-    def mean(collection)
-      if collection.size == 0
-        0
-      else
-        if collection.first.is_a? Float
-          total = collection.inject(0) do |accum, v|
-            unless v.nil? or v.nan?
-              accum + v
-            else
-              accum
-            end
-          end
-          nans = collection.inject(0) do |accum, v|
-            if v.nil? or v.nan?
-              accum + 1
-            else
-              accum
-            end
-          end
-          nans = nans.nil? ? 0 : nans
-          total / (collection.size.to_f - nans)
-        else
-          collection.inject(0) { |accum, v| accum + v} / collection.size.to_f
-        end
-      end
     end
 
     private
