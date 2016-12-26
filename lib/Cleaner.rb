@@ -14,8 +14,10 @@ class Cleaner
 		total = files.size
 		puts " #{total} files: "
 		files.each.with_index do |file, i|
+			
 			print "[#{i}/#{total}]"
 			name = File.basename(file, '.pdf')
+	if name.match(/COLMENA1/)
 			dir_name = File.dirname(file)
 			dir_name = dir_name[dir_name.rindex('/')+1..-1]
 			file_name = "#{@output_path}/" << dir_name
@@ -47,6 +49,9 @@ class Cleaner
 			end
 			puts "[100%] #{name} (#{@matches - @last_count})"
 			@last_count = @matches
+	else
+		puts name
+	end
 		end
 		puts "#{@matches} elements detected and replaced"
 	end

@@ -9,6 +9,14 @@ PDF::Reader::PageState.class_eval do
     #puts "#{ctm.e},#{ctm.f}"
   end
 
+  def begin_text_object
+    puts ">------>"
+  end
+
+  def end_text_object
+    puts ">------>"
+  end
+
 end
 PDF::Reader::PageTextReceiver.class_eval do
 	SPACE = " "
@@ -38,6 +46,7 @@ PDF::Reader::PageTextReceiver.class_eval do
           @state.process_glyph_displacement(glyph_width, 0, utf8_chars == SPACE)
         end
         unless @state.tilted?#string.match /^\d{6}\s[A-Z0-9]{8}\s\d{6}$/ #Morgan Stanley vertical code remover
+          print "#{total_text}"
           @characters << PDF::Reader::TextRun.new(newx*2, newy*2, total_width, @state.font_size, total_text) #EDIT
         end
     end
